@@ -249,7 +249,8 @@ public class JFXSnackbar extends Group {
                 if (pauseTransition != null) {
                     pauseTransition.setOnFinished(done -> {
                         pauseTransition = null;
-                        eventsSet.remove(currentEvent);
+                        if (currentEvent != null)
+                            eventsSet.remove(currentEvent);
                         currentEvent = eventQueue.peek();
                         close();
                     });
@@ -265,10 +266,6 @@ public class JFXSnackbar extends Group {
             openAnimation.stop();
         }
         if (this.isVisible()) {
-            if (pauseTransition != null) {
-                pauseTransition.stop();
-                pauseTransition = null;
-            }
             Timeline closeAnimation = new Timeline(
                 new KeyFrame(
                     Duration.ZERO,
@@ -293,6 +290,10 @@ public class JFXSnackbar extends Group {
             closeAnimation.setOnFinished(e -> {
                 resetPseudoClass();
                 processSnackbar();
+                if (pauseTransition != null) {
+                    pauseTransition.stop();
+                    pauseTransition = null;
+                }
             });
             closeAnimation.play();
         }
